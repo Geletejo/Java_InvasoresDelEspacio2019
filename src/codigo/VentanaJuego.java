@@ -5,6 +5,7 @@
  */
 package codigo;
 
+import java.applet.AudioClip;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -17,6 +18,8 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
 import javax.swing.Timer;
 
 /**
@@ -25,8 +28,8 @@ import javax.swing.Timer;
  */
 public class VentanaJuego extends javax.swing.JFrame {
 
-    static int ANCHOPANTALLA = 600;
-    static int ALTOPANTALLA = 450;
+    static int ANCHOPANTALLA = 800;
+    static int ALTOPANTALLA = 600;
 
     //numero de marcianos que van a aparecer
     int filas = 8;
@@ -64,7 +67,7 @@ public class VentanaJuego extends javax.swing.JFrame {
         // 4º lo que mide de ancho el sprite en el spritesheet
         // 5º lo que mide de alto el sprite en el spritesheet
         // 6º para cambiar el tamaño de los sprites
-        imagenes = cargaImagenes("/imagenes/invaders2.png", 5, 4, 64, 64, 2);
+        imagenes = cargaImagenes("/imagenes/Hitler.png", 5, 4, 64, 64, 2);
         
         miDisparo.imagen = imagenes[3][2];
         setSize(ANCHOPANTALLA, ALTOPANTALLA);
@@ -77,6 +80,9 @@ public class VentanaJuego extends javax.swing.JFrame {
         miNave.imagen = imagenes[4][2];
         miNave.x = ANCHOPANTALLA / 2 - miNave.imagen.getWidth(this) / 2;
         miNave.y = ALTOPANTALLA - miNave.imagen.getHeight(this) - 40;
+        
+
+        
         
         //inicializo el array de marcianos
         //os reto a que hagais esto usando mods (es decir, usando el bucle for anidado)
@@ -235,6 +241,24 @@ public class VentanaJuego extends javax.swing.JFrame {
         }
     }
 
+       private void reproduce (String cancion){
+           try {
+            Clip clip = AudioSystem.getClip();
+            clip.open(AudioSystem.getAudioInputStream( getClass().getResource(cancion) ));
+            clip.loop(0);
+            Thread one = new Thread() {
+                    public void run() {
+                            while(clip.getFramePosition()<clip.getFrameLength())
+                                Thread.yield();
+                    }  
+                };
+            one.start();
+        } catch (Exception e) {      
+        } 
+   }
+    
+    
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -293,6 +317,7 @@ public class VentanaJuego extends javax.swing.JFrame {
             case KeyEvent.VK_SPACE:
                 miDisparo.posicionaDisparo(miNave);
                 miDisparo.disparado = true;
+                reproduce("/sonidos/m16.wav");
                 break;
         }
     }//GEN-LAST:event_formKeyPressed
